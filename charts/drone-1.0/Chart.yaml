@@ -1,0 +1,21 @@
+appVersion: 1.0.0-rc.5
+description: Drone is a Continuous Delivery system built on container technology
+home: https://drone.io/
+icon: https://drone.io/apple-touch-icon.png
+keywords:
+- continuous-delivery
+- continuous-deployment
+- continuous-integration
+- docker
+- drone
+- drone.io
+- go
+maintainers:
+- email: christian.roggia@gmail.com
+  name: christian-roggia
+- email: username.taken@gmail.com
+  name: paulczar
+name: drone
+sources:
+- https://github.com/drone/drone
+version: 2.0.0-rc.10

@@ -1,0 +1,101 @@
+repositories:
+  - name: roboll
+    url: http://roboll.io/charts
+  - name: stable
+    url: https://kubernetes-charts.storage.googleapis.com
+
+helmDefaults:
+  tillerNamespace: kube-system
+  kubeContext: minikube
+  force: true
+  tls: false
+
+releases:
+  - name: drone-08
+    installed: false
+    labels:
+      app: drone
+      version: 0.8
+    namespace: default
+    chart: charts/drone
+    values:
+      - ingress:
+          enabled: true
+          hostname: {{ env "DRONE_SERVER_HOST" }}
+          tls: false
+          annotations:
+            kubernetes.io/ingress.class: nginx
+            nginx.ingress.kubernetes.io/ssl-redirect: "false"
+        server:
+          env:
+            DRONE_DEBUG: true
+            DRONE_OPEN: true
+            DRONE_DATABASE_DRIVER: sqlite3
+            DRONE_DATABASE_DATASOURCE: /var/lib/drone/drone.sqlite
+            DRONE_GITHUB: true
+            DRONE_ADMIN: {{ env "DRONE_ADMIN" }}
+            DRONE_GITHUB_CLIENT: {{ env "DRONE_GITHUB_CLIENT_ID" }}
+            DRONE_GITHUB_SECRET: {{ env "DRONE_GITHUB_CLIENT_SECRET" }}
+        agent:
+          env:
+            DRONE_DEBUG: false
+        shared_secret: bladibla
+        rbac:
+          create: true
+  - name: drone-10
+    installed: true
+    labels:
+      app: drone
+      version: 1.0
+    namespace: default
+    version: 2.0.0-rc.9
+    chart: stable/drone
+    values:
+      - ingress:
+          enabled: true
+          hosts:
+            - {{ env "DRONE_SERVER_HOST" }}
+          annotations:
+            kubernetes.io/ingress.class: nginx
+            nginx.ingress.kubernetes.io/ssl-redirect: "false"
+        sourceControl:
+          provider: github
+          secret: drone-server-secret
+          github:
+            clientID: {{ env "DRONE_GITHUB_CLIENT_ID" }}
+            server: https://github.com        
+        server:
+          host: {{ env "DRONE_SERVER_HOST" }}  
+          protocol: {{ env "DRONE_SERVER_PROTO" }}
+          adminUser: {{ env "DRONE_ADMIN" }}
+          env:
+            DRONE_OPEN: true
+            DRONE_RPC_SECRET: bladibla
+            DRONE_LOGS_DEBUG: true
+            DRONE_DATABASE_DRIVER: sqlite3
+            DRONE_DATABASE_DATASOURCE: /var/lib/drone/drone.sqlite
+            DRONE_GITHUB_SKIP_VERIFY: true
+        rbac:
+          create: true
+
+  - name: nginx-ingress
+    installed: true
+    namespace: system
+    version: 1.4.0
+    chart: stable/nginx-ingress
+    values:
+      - rbac:
+          create: true
+        controller:
+          # config:
+          #   ssl-redirect: "false"
+          #   hsts: "false"
+          #   disable-ipv6: "true"
+          service:
+            # type: LoadBalancer
+            type: NodePort
+            nodePorts:
+              http: 32080
+              https: 32443
+
+ 

@@ -1,0 +1,6 @@
+export DRONE_ADMIN=yourgithubname
+export DRONE_GITHUB_CLIENT_ID=clientid
+export DRONE_GITHUB_CLIENT_SECRET=clientsecret
+export DRONE_SERVER_HOST=xxx.xx.ngrok.io
+export DRONE_SERVER_PROTO=http
+

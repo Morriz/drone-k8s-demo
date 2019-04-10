@@ -31,4 +31,13 @@ Before you start make sure you have:
 6. Run `helmfile --selector name=drone-08 apply` and check if drone domain works at the given domain. I bet you it does.
 7. Go back to your oauth app and change the last part of the callback url, `authorize` to `login` and save.
 8. `helm delete drone-08 --purge` to kill the old drone.
-9. Run `helmfile --selector name=drone-10 apply` and check again. I get a 401 "Bad Credentials".
+9.  Run `helmfile --selector name=drone-10 apply` and check again. I get a 401 "Bad Credentials".
+    
+### Debugging steps I performed:
+
+Make sure the container is injected with the right client id and secret, which you can see in the drone container env:
+
+    kubectl exec -ti $(kubectl get po -l app=drone --output=name | cut -c 5-) -- env | grep GITHUB
+
+Next I would like to see detailed log output of a runnng drone server working throught the oauth flow.
+I suspect a header naming change happened between 0.8.2 and 1.0.0, which gets overwritten in the flow (Request-ID ??).

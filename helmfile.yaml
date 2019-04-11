@@ -12,12 +12,12 @@ helmDefaults:
 
 releases:
   - name: drone-08
-    installed: false
+    installed: true
     labels:
       app: drone
       version: 0.8
     namespace: default
-    chart: charts/drone
+    chart: charts/drone-08
     values:
       - ingress:
           enabled: true

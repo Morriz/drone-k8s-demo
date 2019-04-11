@@ -17,7 +17,7 @@ releases:
       app: drone
       version: 0.8
     namespace: default
-    chart: charts/drone-08
+    chart: charts/drone-0.8
     values:
       - ingress:
           enabled: true

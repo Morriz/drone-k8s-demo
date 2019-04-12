@@ -6,8 +6,8 @@ repositories:
 
 helmDefaults:
   tillerNamespace: kube-system
-  kubeContext: minikube
-  force: true
+  kubeContext: docker-for-desktop
+  force: true 
   tls: false
 
 releases:
@@ -51,7 +51,11 @@ releases:
     version: 2.0.0-rc.9
     chart: stable/drone
     values:
-      - ingress:
+      - images:
+          server:
+            repository: drone/drone
+            tag: 1
+        ingress:
           enabled: true
           hosts:
             - {{ env "DRONE_SERVER_HOST" }}
@@ -63,20 +67,16 @@ releases:
           secret: drone-server-secret
           github:
             clientID: {{ env "DRONE_GITHUB_CLIENT_ID" }}
-            server: https://github.com        
         server:
-          host: {{ env "DRONE_SERVER_HOST" }}  
+          host: {{ env "DRONE_SERVER_HOST" }}
           protocol: {{ env "DRONE_SERVER_PROTO" }}
           adminUser: {{ env "DRONE_ADMIN" }}
           env:
-            DRONE_OPEN: true
-            DRONE_RPC_SECRET: bladibla
             DRONE_LOGS_DEBUG: true
-            DRONE_DATABASE_DRIVER: sqlite3
-            DRONE_DATABASE_DATASOURCE: /var/lib/drone/drone.sqlite
-            DRONE_GITHUB_SKIP_VERIFY: true
+            # DRONE_LOGS_COLOR: true
+            # DRONE_LOGS_PRETTY: true
         rbac:
-          create: true
+          create: false
 
   - name: nginx-ingress
     installed: true
@@ -87,10 +87,10 @@ releases:
       - rbac:
           create: true
         controller:
-          # config:
-          #   ssl-redirect: "false"
-          #   hsts: "false"
-          #   disable-ipv6: "true"
+          config:
+            use-forwarded-headers: "true"
+          extraArgs:
+            v: 3
           service:
             # type: LoadBalancer
             type: NodePort
